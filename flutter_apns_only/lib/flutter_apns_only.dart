@@ -12,7 +12,7 @@ class ApnsRemoteMessage {
   String? get actionIdentifier => UNNotificationAction.getIdentifier(payload);
 }
 
-typedef ApnsMessageHandler = Future<void> Function(ApnsRemoteMessage);
+typedef ApnsMessageHandler = Future<void> Function(Map<String, dynamic>);
 typedef WillPresentHandler = Future<bool> Function(ApnsRemoteMessage);
 
 class ApnsPushConnectorOnly {
@@ -57,6 +57,7 @@ class ApnsPushConnectorOnly {
   }
 
   Future<dynamic> _handleMethod(MethodCall call) async {
+    print("_handleMethod ${call.arguments}");
     switch (call.method) {
       case 'onToken':
         token.value = call.arguments;
@@ -71,11 +72,14 @@ class ApnsPushConnectorOnly {
         authorizationStatus.value = call.arguments;
         return null;
       case 'onMessage':
-        return _onMessage?.call(_extractMessage(call));
+        // return _onMessage?.call(_extractMessage(call));
+        return _onMessage?.call(call.arguments.cast<String, dynamic>());
       case 'onLaunch':
-        return _onLaunch?.call(_extractMessage(call));
+        // return _onLaunch?.call(_extractMessage(call));
+        return _onLaunch?.call(call.arguments.cast<String, dynamic>());
       case 'onResume':
-        return _onResume?.call(_extractMessage(call));
+        // return _onResume?.call(_extractMessage(call));
+        return _onResume?.call(call.arguments.cast<String, dynamic>());
       case 'willPresent':
         return shouldPresent?.call(_extractMessage(call)) ??
             Future.value(false);
@@ -84,6 +88,8 @@ class ApnsPushConnectorOnly {
         throw UnsupportedError('Unrecognized JSON message');
     }
   }
+
+  // Map<String, dynamic> _extractMessageForMap()
 
   ApnsRemoteMessage _extractMessage(MethodCall call) {
     final map = call.arguments as Map;

@@ -166,7 +166,8 @@ func getFlutterError(_ error: Error) -> FlutterError {
     
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
         if let launchNotification = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [String: Any] {
-            self.launchNotification = FlutterApnsSerialization.remoteMessageUserInfo(toDict: launchNotification)
+//             self.launchNotification = FlutterApnsSerialization.remoteMessageUserInfo(toDict: launchNotification)
+            self.launchNotification = launchNotification;
         }
         return true
     }
@@ -187,7 +188,7 @@ func getFlutterError(_ error: Error) -> FlutterError {
     
     
     public func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
-        let userInfo = FlutterApnsSerialization.remoteMessageUserInfo(toDict: userInfo)
+//         let userInfo = FlutterApnsSerialization.remoteMessageUserInfo(toDict: userInfo)
         
         if resumingFromBackground {
             onResume(userInfo: userInfo)
@@ -206,7 +207,7 @@ func getFlutterError(_ error: Error) -> FlutterError {
             return
         }
         
-        let dict = FlutterApnsSerialization.remoteMessageUserInfo(toDict: userInfo)
+        let dict = userInfo;
         
         channel.invokeMethod("willPresent", arguments: dict) { (result) in
             let shouldShow = (result as? Bool) ?? false
@@ -214,7 +215,7 @@ func getFlutterError(_ error: Error) -> FlutterError {
                 completionHandler([.alert, .sound])
             } else {
                 completionHandler([])
-                let userInfo = FlutterApnsSerialization.remoteMessageUserInfo(toDict: userInfo)
+//                 let userInfo = FlutterApnsSerialization.remoteMessageUserInfo(toDict: userInfo)
                 self.channel.invokeMethod("onMessage", arguments: userInfo)
             }
         }
@@ -227,10 +228,11 @@ func getFlutterError(_ error: Error) -> FlutterError {
         }
         
         userInfo["actionIdentifier"] = response.actionIdentifier
-        let dict = FlutterApnsSerialization.remoteMessageUserInfo(toDict: userInfo)
-        
+//         let dict = FlutterApnsSerialization.remoteMessageUserInfo(toDict: userInfo)
+        let dict = userInfo;
+
         if launchNotification != nil {
-            launchNotification = dict
+//             launchNotification = dict
             return
         }
 
@@ -240,6 +242,9 @@ func getFlutterError(_ error: Error) -> FlutterError {
     
     func onResume(userInfo: [AnyHashable: Any]) {
         channel.invokeMethod("onResume", arguments: userInfo)
+    }
+
+    func parseJson(data: NSDictionary){
     }
 }
 
